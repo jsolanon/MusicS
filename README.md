@@ -7,10 +7,12 @@ REST API
 GetSongs
 
 Shows all the songs in the database
+http://localhost:8080/api/v1/songs
 
 GetByArtist
 
 Search a song by artist
+http://localhost:8080/api/v1/songs/NombreDelArtista
 
 GetBySong
 

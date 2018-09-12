@@ -49,11 +49,10 @@ func main() {
 
 	v1 := r.Group("api/v1")
 	{
-		//v1.POST("/songs", PostUser)
+
 		v1.GET("/songs", GetSongs)
 		v1.GET("/songs/:artist", GetByArtist)
-		//v1.PUT("/songs/:id", UpdateUser)
-		//v1.DELETE("/songs/:id", DeleteUser)
+		//v1.GET("/songs/:genre", GetByGenre)
 	}
 
 	r.Run(":8080")
@@ -93,13 +92,35 @@ func GetByArtist(c *gin.Context) {
 		c.JSON(200, song)
 	} else {
 		// Display JSON error
-		c.JSON(404, gin.H{"error": "Song not found"})
+		c.JSON(404, gin.H{"error": "Artist not found"})
 	}
 
-	// curl -i http://localhost:8080/api/v1/songs/
+	// curl -i http://localhost:8080/api/v1/songs/Artist
 }
 
+/*
+func GetByGenre(c *gin.Context) {
+	// Connection to the database
+	db := InitDb()
+	// Close connection database
+	defer db.Close()
 
+	genre := c.Params.ByName("genre")
+	var song Songs
+	// SELECT * FROM songs WHERE genre = 1;
+	db.First(&song, genre)
+
+	if song.Genre != 0 {
+		// Display JSON result
+		c.JSON(200, song)
+	} else {
+		// Display JSON error
+		c.JSON(404, gin.H{"error": "Genre not found"})
+	}
+
+	// curl -i http://localhost:8080/api/v1/song/Genre
+}
+*/
 
 func OptionsSongs(c *gin.Context) {
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "DELETE,POST, PUT")
