@@ -20,6 +20,7 @@ Search a song by song tittle
 http://localhost:8080/api/v1/songs/NombreDeLaCancion
 
 -GetGenres
+
 Shows all the genres in the database
 http://localhost:8080/api/v1/genres
 
