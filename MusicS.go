@@ -65,8 +65,10 @@ func main() {
 
    	 v1.GET("/songs", GetSongs)
    	 v1.GET("/genres", GetGenres)
-   	 v1.GET("/songs/:artist", GetByArtist)
+   	 //v1.GET("/songs/:artist", GetByArtist)
    	 v1.GET("/genres/:genre", GetByGenre)
+   	 v1.GET("/songs/:cancion", GetByTitle)
+
     }
 
     r.Run(":8080")
@@ -111,7 +113,7 @@ func GetGenres(c *gin.Context) {
     // curl -i http://localhost:8080/api/v1/genres
 }
 
-
+/*
 func GetByArtist(c *gin.Context) {
     // Connection to the database
     db := InitDb()
@@ -137,6 +139,34 @@ func GetByArtist(c *gin.Context) {
     }
 
     // curl -i http://localhost:8080/api/v1/songs/Artist
+}
+*/
+
+func GetByTitle(c *gin.Context) {
+    // Connection to the database
+    db := InitDb()
+    // Close connection database
+    defer db.Close()
+
+    cancion := c.Params.ByName("cancion")
+    var song Songs
+    // SELECT * FROM Songs WHERE artist = ?;
+    //db.First(&song, artist)
+    //db.Where("artist = ?", artist).First(&song)
+    //db.Raw("SELECT S.artist, S.song, G.name, S.length FROM Songs S INNER JOIN Genres G ON S.genre = G.id WHERE S.artist = ?", artist).Scan(&song)
+    db.Table("Songs").Select("Songs.Artist, Songs.Song, Genres.Name, Songs.Length").Joins("inner join Genres on Songs.Genre = Genres.ID").Where("Songs.Song = ?", cancion).Scan(&song)
+
+    //len(song.Song) != 0
+    //song.Song != ""
+    if len(song.Song) != 0 {
+   	 // Display JSON result
+   	 c.JSON(200, song)
+    } else {
+   	 // Display JSON error
+   	 c.JSON(404, gin.H{"error": "Song not found"})
+    }
+
+    // curl -i http://localhost:8080/api/v1/songs/Title
 }
 
 
@@ -171,3 +201,5 @@ func OptionsSongs(c *gin.Context) {
     c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
     c.Next()
 }
+
+

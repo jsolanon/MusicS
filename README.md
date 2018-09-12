@@ -17,7 +17,18 @@ http://localhost:8080/api/v1/songs/NombreDelArtista
 GetBySong
 
 Search a song by song tittle
+http://localhost:8080/api/v1/songs/NombreDeLaCancion
+
+GetGenres
+http://localhost:8080/api/v1/genres
 
 GetByGenre
 
 Search a song by genre name
+http://localhost:8080/api/v1/genres/NombreGenero
+
+
+Ejecutar
+go run MusicS.go
+
+y seleccionar uno de los métodos antes mencionados
