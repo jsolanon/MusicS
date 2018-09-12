@@ -2,33 +2,35 @@
 
 MusicS is a simple REST app, using golang and sqlite
 
-REST API
+#REST API
 
-GetSongs
+-GetSongs
 
 Shows all the songs in the database
 http://localhost:8080/api/v1/songs
 
-GetByArtist
+-GetByArtist
 
 Search a song by artist
 http://localhost:8080/api/v1/songs/NombreDelArtista
 
-GetBySong
+-GetBySong
 
 Search a song by song tittle
 http://localhost:8080/api/v1/songs/NombreDeLaCancion
 
-GetGenres
+-GetGenres
+Shows all the genres in the database
 http://localhost:8080/api/v1/genres
 
-GetByGenre
+-GetByGenre
 
 Search a song by genre name
 http://localhost:8080/api/v1/genres/NombreGenero
 
 
-Ejecutar
+#Ejecutar
+
 go run MusicS.go
 
-y seleccionar uno de los métodos antes mencionados
+y seleccionar uno de los métodos antes mencionados en el navegador.
