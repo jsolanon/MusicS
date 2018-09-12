@@ -8,11 +8,24 @@ import (
 
 //Declaración de la estructura
 type Songs struct {
-    Id int	`gorm:"AUTO_INCREMENT" form:"id" json:"id"`
+    //Id int	`gorm:"AUTO_INCREMENT" form:"id" json:"id"`
     Artist string `gorm:"not null" form:"artist" json:"artist"`
     Song  string `gorm:"not null" form:"song" json:"song"`
-    Genre  int `gorm:"not null" form:"genre" json:"genre"`
+    //Genre  int `gorm:"not null" form:"genre" json:"genre"`
+    Genre  string `gorm:"not null" form:"genre" json:"genre"`
     Length  int `gorm:"not null" form:"length" json:"length"`
+}
+
+type Genres struct{
+    //ID int	`gorm:"AUTO_INCREMENT" form:"id" json:"id"`
+    Name string `gorm:"not null" form:"name" json:"name"`
+}
+
+//Estructura para la segunda consulta extra
+type ExGenres struct {
+    Genre string `gorm:"not null" form:"genre" json:"genre"`
+    Qty int `gorm:"not null" form:"qty" json:"qty"`
+    Total int `gorm:"not null" form:"total" json:"total"`
 }
 
 func InitDb() *gorm.DB {
@@ -51,13 +64,20 @@ func main() {
     {
 
    	 v1.GET("/songs", GetSongs)
+   	 v1.GET("/genres", GetGenres)
    	 v1.GET("/songs/:artist", GetByArtist)
-   	 //v1.GET("/songs/:genre", GetByGenre)
+   	 v1.GET("/genres/:genre", GetByGenre)
     }
 
     r.Run(":8080")
 }
 
+//Queries:
+//SELECT S.artist, S.song, G.name, S.length FROM Songs S JOIN Genres G ON S.genre = G.id WHERE S.artist = ?
+
+//SELECT G.name, COUNT(S.song) AS [TotalSongs], SUM(S.length) AS [TotalLenght] FROM Songs S JOIN Genres G ON S.genre = G.id GROUP BY G.name
+
+//Mostrar la info de todas las canciones
 func GetSongs(c *gin.Context) {
     // Connection to the database
     db := InitDb()
@@ -74,6 +94,24 @@ func GetSongs(c *gin.Context) {
     // curl -i http://localhost:8080/api/v1/songs
 }
 
+//Mostrar todos los generos
+func GetGenres(c *gin.Context) {
+    // Connection to the database
+    db := InitDb()
+    // Close connection database
+    defer db.Close()
+
+    var genres []Genres
+    // SELECT * FROM Genres
+    db.Find(&genres)
+
+    // Display JSON result
+    c.JSON(200, genres)
+
+    // curl -i http://localhost:8080/api/v1/genres
+}
+
+
 func GetByArtist(c *gin.Context) {
     // Connection to the database
     db := InitDb()
@@ -84,7 +122,9 @@ func GetByArtist(c *gin.Context) {
     var song Songs
     // SELECT * FROM Songs WHERE artist = ?;
     //db.First(&song, artist)
-    db.Where("artist = ?", artist).First(&song)
+    //db.Where("artist = ?", artist).First(&song)
+    //db.Raw("SELECT S.artist, S.song, G.name, S.length FROM Songs S INNER JOIN Genres G ON S.genre = G.id WHERE S.artist = ?", artist).Scan(&song)
+    db.Table("Songs").Select("Songs.Artist, Songs.Song, Genres.Name, Songs.Length").Joins("inner join Genres on Songs.Genre = Genres.ID").Where("Songs.Artist = ?", artist).Scan(&song)
 
     //len(song.Artist) != 0
     //song.Artist != ""
@@ -99,7 +139,7 @@ func GetByArtist(c *gin.Context) {
     // curl -i http://localhost:8080/api/v1/songs/Artist
 }
 
-/*
+
 func GetByGenre(c *gin.Context) {
     // Connection to the database
     db := InitDb()
@@ -109,9 +149,12 @@ func GetByGenre(c *gin.Context) {
     genre := c.Params.ByName("genre")
     var song Songs
     // SELECT * FROM songs WHERE genre = 1;
-    db.First(&song, genre)
+    //db.First(&song, genre)
+    //db.Where("genre = ?", genre).First(&song)
+    db.Table("Songs").Select("Songs.Artist, Songs.Song, Genres.Name, Songs.Length").Joins("inner join Genres on Genres.ID = Songs.Genre").Where("Genre.Name = ?", genre).Scan(&song)
 
-    if song.Genre != 0 {
+    //song.Genre != 0 -> len(song.Artist) != 0
+    if len(song.Genre) != 0 {
    	 // Display JSON result
    	 c.JSON(200, song)
     } else {
@@ -121,7 +164,7 @@ func GetByGenre(c *gin.Context) {
 
     // curl -i http://localhost:8080/api/v1/song/Genre
 }
-*/
+
 
 func OptionsSongs(c *gin.Context) {
     c.Writer.Header().Set("Access-Control-Allow-Methods", "DELETE,POST, PUT")
