@@ -2,7 +2,7 @@
 
 MusicS is a simple REST app, using golang and sqlite
 
-#REST API
+# REST API
 
 -GetSongs
 
@@ -29,7 +29,7 @@ Search a song by genre name
 http://localhost:8080/api/v1/genres/NombreGenero
 
 
-#Ejecutar
+# Ejecutar
 
 go run MusicS.go
 
