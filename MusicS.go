@@ -68,6 +68,7 @@ func main() {
    	 //v1.GET("/songs/:artist", GetByArtist)
    	 v1.GET("/genres/:genre", GetByGenre)
    	 v1.GET("/songs/:cancion", GetByTitle)
+   	 //v1.GET("/genres", GetListGenres)
 
     }
 
@@ -77,7 +78,7 @@ func main() {
 //Queries:
 //SELECT S.artist, S.song, G.name, S.length FROM Songs S JOIN Genres G ON S.genre = G.id WHERE S.artist = ?
 
-//SELECT G.name, COUNT(S.song) AS [TotalSongs], SUM(S.length) AS [TotalLenght] FROM Songs S JOIN Genres G ON S.genre = G.id GROUP BY G.name
+//SELECT G.Name, COUNT(S.Song) AS [TotalSongs], SUM(S.Length) AS [TotalLenght] FROM Songs S JOIN Genres G ON S.Genre = G.ID GROUP BY G.Name
 
 //Mostrar la info de todas las canciones
 func GetSongs(c *gin.Context) {
@@ -195,11 +196,30 @@ func GetByGenre(c *gin.Context) {
     // curl -i http://localhost:8080/api/v1/song/Genre
 }
 
+func GetListGenres(c *gin.Context) {
+    // Connection to the database
+    db := InitDb()
+    // Close connection database
+    defer db.Close()
+
+    var LGenres []ExGenres
+
+    // curl -i http://localhost:8080/api/v1/genres
+
+    // SELECT * FROM songs WHERE genre = 1;
+    //db.First(&song, genre)
+    //db.Where("genre = ?", genre).First(&song)
+//SELECT G.Name, COUNT(S.Song) AS [TotalSongs], SUM(S.Length) AS [TotalLenght] FROM Songs S JOIN Genres G ON S.Genre = G.ID GROUP BY G.Name
+    db.Table("Songs").Select("Genres.Name, COUNT(Songs.Song) AS TotalSongs, SUM(Songs.Length) AS TotalLength").Joins("inner join Genres on Genres.ID = Songs.Genre").Scan(&LGenres)
+
+    c.JSON(200, LGenres)
+
+    // curl -i http://localhost:8080/api/v1/song/Genre
+}
 
 func OptionsSongs(c *gin.Context) {
     c.Writer.Header().Set("Access-Control-Allow-Methods", "DELETE,POST, PUT")
     c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
     c.Next()
 }
-
 
