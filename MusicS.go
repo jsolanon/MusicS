@@ -7,25 +7,19 @@ import (
 )
 
 //Declaración de la estructura
-
-type Genres struct{
-    //ID int	`gorm:"AUTO_INCREMENT" form:"id" json:"id"`
-    Name string `gorm:"not null" form:"name" json:"name"`
-}
-
 type Songs struct {
     //Id int	`gorm:"AUTO_INCREMENT" form:"id" json:"id"`
     Artist string `gorm:"not null" form:"artist" json:"artist"`
     Song  string `gorm:"not null" form:"song" json:"song"`
     //Genre  int `gorm:"not null" form:"genre" json:"genre"`
-    //Genre  string `gorm:"not null" form:"genre" json:"genre"`
-    Genre struct{
-   	 //ID int	`gorm:"AUTO_INCREMENT" form:"id" json:"id"`
-   	 Name string `gorm:"not null" form:"name" json:"name"`
-    }
+    Genre  string `gorm:"not null" form:"genre" json:"genre"`
     Length  int `gorm:"not null" form:"length" json:"length"`
 }
 
+type Genres struct{
+    //ID int	`gorm:"AUTO_INCREMENT" form:"id" json:"id"`
+    Name string `gorm:"not null" form:"name" json:"name"`
+}
 
 //Estructura para la segunda consulta extra
 type ExGenres struct {
@@ -228,4 +222,5 @@ func OptionsSongs(c *gin.Context) {
     c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
     c.Next()
 }
+
 
